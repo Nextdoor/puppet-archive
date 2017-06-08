@@ -21,6 +21,7 @@ describe Puppet::Type.type(:archive) do
     expect(resource[:checksum_verify]).to eq :true
     expect(resource[:extract_flags]).to eq :undef
     expect(resource[:allow_insecure]).to eq false
+    expect(resource[:download_options]).to eq nil
   end
 
   it 'verify resource[:path] is absolute filepath' do
@@ -98,6 +99,14 @@ describe Puppet::Type.type(:archive) do
     end.not_to raise_error
   end
 
+  it 'verify resource[:download_options] is valid' do
+    expect do
+      ['--tlsv1', ['--region', 'eu-central-1']].each do |type|
+        resource[:download_options] = type
+      end
+    end.not_to raise_error
+  end
+
   describe 'autorequire parent path' do
     let(:file_tmp) { Puppet::Type.type(:file).new(name: '/tmp') }
     let(:catalog) { Puppet::Resource::Catalog.new }
@@ -105,6 +114,7 @@ describe Puppet::Type.type(:archive) do
     it 'requires archive parent' do
       catalog.add_resource file_tmp
       example_archive = described_class.new(
+
         path: '/tmp/example.zip',
         source: 'http://home.lan/example.zip'
       )

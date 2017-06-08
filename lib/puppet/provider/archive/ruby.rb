@@ -166,6 +166,7 @@ Puppet::Type.type(:archive).provide(:ruby) do
       resource[:source],
       path
     ]
+    params += resource[:download_options] if resource[:download_options]
 
     aws(params)
   end
